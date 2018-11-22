@@ -1,6 +1,5 @@
 package cn.hgf.wechatdev.controller;
 
-import cn.hgf.wechatdev.common.CommonParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
