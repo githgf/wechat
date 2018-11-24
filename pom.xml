@@ -62,6 +62,13 @@
             <version>1.2.24</version>
         </dependency>
 
+        <!-- 将javaBean 和 xml 相互转换 -->
+        <dependency>
+            <groupId>xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
 
     </dependencies>
 

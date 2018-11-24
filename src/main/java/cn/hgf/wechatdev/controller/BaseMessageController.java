@@ -1,17 +1,23 @@
 package cn.hgf.wechatdev.controller;
 
 import cn.hgf.wechatdev.common.annotation.MessageHandler;
-import cn.hgf.wechatdev.model.BaseMessageInfo;
-import cn.hgf.wechatdev.model.TextMessageInfo;
+import cn.hgf.wechatdev.common.constant.CommonParam;
+import cn.hgf.wechatdev.common.util.MessageUtil;
+import cn.hgf.wechatdev.helper.BaseMessageHelper;
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/base")
 public class BaseMessageController {
-    @GetMapping("getToken")
+    @Autowired
+    BaseMessageHelper baseMessageHelper;
+
+    @RequestMapping(value = "weixin",method = RequestMethod.GET)
     public String getToken(@RequestParam(value = "signature",required = false) String signature,
                            @RequestParam(value = "nonce",required = false) String nonce,
                            @RequestParam(value = "timestamp",required = false) String timestamp,
@@ -24,20 +30,14 @@ public class BaseMessageController {
         return echostr;
     }
 
-    @PostMapping("getFamilyMessage")
-    public String getFamilyMessage(@RequestBody TextMessageInfo textMessageInfo){
-        System.out.println(textMessageInfo);
-        return "i love my family";
-    }
-
-    @PostMapping(value = "textMessageInfo",consumes = { MediaType.APPLICATION_XML_VALUE }, produces = MediaType.APPLICATION_XML_VALUE)
+    @RequestMapping(value = "weixin",method = RequestMethod.POST)
     @MessageHandler
-    public TextMessageInfo textMessageInfo(@RequestBody TextMessageInfo textMessageInfo){
-        textMessageInfo.setContent("欢迎关注帆影ing公众号");
-        return textMessageInfo;
+    public Object textMessageInfo(HttpServletRequest httpServletRequest){
+        JSONObject jsonObject = MessageUtil.xmlToMap(httpServletRequest);
+        if (jsonObject.get(CommonParam.MESSAGE_TYPE) != null){
 
-    }@PostMapping(value = "textBaseInfo",consumes = { MediaType.APPLICATION_XML_VALUE }, produces = MediaType.APPLICATION_XML_VALUE)
-    public BaseMessageInfo textBase(@RequestBody BaseMessageInfo baseMessageInfo){
-        return baseMessageInfo;
+            return baseMessageHelper.parseMessageInfo(jsonObject);
+        }
+        return CommonParam.WECHAT_REPLY_TEXT_SUCCESS;
     }
 }

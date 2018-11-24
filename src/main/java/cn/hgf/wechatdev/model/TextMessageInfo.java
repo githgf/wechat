@@ -23,3 +23,26 @@ public class TextMessageInfo extends BaseMessageInfo{
         return textMessageInfo;
     }
 }
+
+class ImageMessageInfo extends BaseMessageInfo{
+    /** 图片链接（由系统生成）*/
+    String PicUrl;
+    /** 图片消息媒体id，可以调用多媒体文件下载接口拉取数据。*/
+    String MediaId;
+
+    public String getPicUrl() {
+        return PicUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        PicUrl = picUrl;
+    }
+
+    public String getMediaId() {
+        return MediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        MediaId = mediaId;
+    }
+}

@@ -54,19 +54,24 @@ public class LogAspect {
 
         StringBuilder paramBuilderStr = new StringBuilder();
 
-        for (Object methodArg : methodArgs) {
-            String name = methodArg.getClass().getName();
+        if (methodArgs != null && methodArgs.length > 0){
 
-            if(name.contains("org.apache.catalina.connector")
-                    ||  "org.springframework.web.multipart.commons.CommonsMultipartFile".equals(name)
-                    || name.contains("org.springframework")){
-                continue;
+            for (Object methodArg : methodArgs) {
+                if (methodArg == null)continue;
+                String name = methodArg.getClass().getName();
+
+                if(name.contains("org.apache.catalina.connector")
+                        ||  "org.springframework.web.multipart.commons.CommonsMultipartFile".equals(name)
+                        || name.contains("org.springframework")){
+                    continue;
+                }
+
+                paramBuilderStr.append(JSON.toJSONString(methodArg));
             }
 
-            paramBuilderStr.append(JSON.toJSONString(methodArg));
+            requestJsonObj.put("requestParam",paramBuilderStr);
         }
 
-        requestJsonObj.put("requestParam",paramBuilderStr);
 
         logger.info("接收到请求 ===> " + requestJsonObj);
 
