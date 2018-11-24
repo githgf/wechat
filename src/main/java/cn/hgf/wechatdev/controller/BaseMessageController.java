@@ -1,8 +1,11 @@
 package cn.hgf.wechatdev.controller;
 
+import cn.hgf.wechatdev.common.annotation.MessageHandler;
+import cn.hgf.wechatdev.model.BaseMessageInfo;
 import cn.hgf.wechatdev.model.TextMessageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,5 +28,16 @@ public class BaseMessageController {
     public String getFamilyMessage(@RequestBody TextMessageInfo textMessageInfo){
         System.out.println(textMessageInfo);
         return "i love my family";
+    }
+
+    @PostMapping(value = "textMessageInfo",consumes = { MediaType.APPLICATION_XML_VALUE }, produces = MediaType.APPLICATION_XML_VALUE)
+    @MessageHandler
+    public TextMessageInfo textMessageInfo(@RequestBody TextMessageInfo textMessageInfo){
+        textMessageInfo.setContent("欢迎关注帆影ing公众号");
+        return textMessageInfo;
+
+    }@PostMapping(value = "textBaseInfo",consumes = { MediaType.APPLICATION_XML_VALUE }, produces = MediaType.APPLICATION_XML_VALUE)
+    public BaseMessageInfo textBase(@RequestBody BaseMessageInfo baseMessageInfo){
+        return baseMessageInfo;
     }
 }

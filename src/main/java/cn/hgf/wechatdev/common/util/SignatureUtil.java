@@ -1,6 +1,6 @@
 package cn.hgf.wechatdev.common.util;
 
-import cn.hgf.wechatdev.common.CommonParam;
+import cn.hgf.wechatdev.common.constant.CommonParam;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.ArrayList;
