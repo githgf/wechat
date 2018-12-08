@@ -1,5 +1,6 @@
 package cn.hgf.wechatdev.common.aspect;
 
+import cn.hgf.wechatdev.common.constant.CommonParam;
 import cn.hgf.wechatdev.model.BaseMessageInfo;
 import com.thoughtworks.xstream.XStream;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -20,15 +21,15 @@ public class ReplyMessageAspect{
         BaseMessageInfo baseMessageInfo = null;
         try {
             Object proceed = proceedingJoinPoint.proceed();
+            if (proceed == null)return CommonParam.WECHAT_REPLY_TEXT_SUCCESS;
             baseMessageInfo = (BaseMessageInfo) proceed;
 
 
-            String fromUserName = baseMessageInfo.getFromUserName();
-            String toUserName = baseMessageInfo.getToUserName();
-
-            baseMessageInfo.setToUserName(fromUserName);
-            baseMessageInfo.setFromUserName(toUserName);
-
+//            String fromUserName = baseMessageInfo.getFromUserName();
+//            String toUserName = baseMessageInfo.getToUserName();
+//
+//            baseMessageInfo.setToUserName(fromUserName);
+//            baseMessageInfo.setFromUserName(toUserName);
             XStream xstream = new XStream();
             xstream.alias("xml", proceed.getClass());
             return xstream.toXML(baseMessageInfo);

@@ -32,8 +32,9 @@ public class BaseMessageController {
 
     @RequestMapping(value = "weixin",method = RequestMethod.POST)
     @MessageHandler
-    public Object textMessageInfo(HttpServletRequest httpServletRequest){
-        JSONObject jsonObject = MessageUtil.xmlToMap(httpServletRequest);
+    public Object textMessageInfo(@RequestBody JSONObject jsonObject){
+//        JSONObject jsonObject = MessageUtil.xmlToMap(httpServletRequest);
+        
         if (jsonObject.get(CommonParam.MESSAGE_TYPE) != null){
 
             return baseMessageHelper.parseMessageInfo(jsonObject);

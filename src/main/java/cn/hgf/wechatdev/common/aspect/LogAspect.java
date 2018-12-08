@@ -1,5 +1,7 @@
 package cn.hgf.wechatdev.common.aspect;
 
+import cn.hgf.wechatdev.model.BaseMessageInfo;
+import cn.hgf.wechatdev.model.TextMessageInfo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.aspectj.lang.ProceedingJoinPoint;
