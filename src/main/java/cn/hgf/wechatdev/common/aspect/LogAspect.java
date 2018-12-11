@@ -85,6 +85,7 @@ public class LogAspect {
 
         } catch (Throwable throwable) {
             requestJsonObj.put("exception",throwable.getMessage());
+            throwable.printStackTrace();
         }
 
         logger.info("返回请求 ===> " + requestJsonObj);
