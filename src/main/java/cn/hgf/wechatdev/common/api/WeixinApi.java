@@ -1,18 +1,31 @@
 package cn.hgf.wechatdev.common.api;
 
+import cn.hgf.wechatdev.common.bean.SwapperHttpClient;
+import cn.hgf.wechatdev.common.constant.CommonParam;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.multipart.FormDataMultiPart;
-import com.sun.jersey.multipart.file.FileDataBodyPart;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 @Component
 public class WeixinApi extends BaseApi{
@@ -20,7 +33,7 @@ public class WeixinApi extends BaseApi{
     @Value("${weixin.api.host}")
     private String weixinHost;
 
-    private String token = "16_kWqnCO8yOiIvbaIX2nbA79XBuIgeM2y-8JYZG4VK-joJzMBoaR1fHrs5PUuYjBRP2Zo4z-CTsfz1ZKiGGbnLe_1uMqPu8v65sElbU5jR9F2g5jksRVZlWnRnhLNs_A8rt1hu9AMfCgatJ1uHAAZfAFASSR";
+    private String token = "16_mKrHPWwHHqySnD0Oo-NukKCy0pp9IDG2haJxnNCZbDZCkoGMWFcjZk6GN9oeautW6opo0t5aNvDglipCcs3DA5tg-79tl-JnLO6xW3RndZ0oIqCOOj5HApAAQdf2BmqbmxIde1fKI8-mIT8oDQOjAIAUHF";
 
     /**
      * @param appId		第三方用户唯一凭证
@@ -39,29 +52,63 @@ public class WeixinApi extends BaseApi{
         return getJsonObjectData(clientResponse);
     }
 
+    public JSONObject getMediaList(String type,Integer offest,Integer count){
+        /*CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+
+        HttpPost httpPost =  new HttpPost(weixinHost + "cgi-bin/material/batchget_material?access_token=" + token);
+        httpPost.setConfig(getRequestConfig());
+
+        JSONObject requestParam = new JSONObject();
+        requestParam.put("type", type);
+        requestParam.put("offest",offest != null ? offest : 0);
+        requestParam.put("count",count != null ? count : 20);
+
+        CloseableHttpResponse httpResponse = null;
+        try {
+            httpPost.setEntity(new StringEntity(requestParam.toJSONString()));
+            httpResponse = httpClient.execute(httpPost);
+
+            return getJsonObjectData(httpResponse);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
+        HttpResponse execute = new SwapperHttpClient(weixinHost + "cgi-bin/material/batchget_material?access_token=" + token)
+                                    .addRequestParam("type", type)
+                                    .addRequestParam("offest", offest != null ? offest : 0)
+                                    .addRequestParam("count", count != null ? count : 20)
+                                    .post()
+                                    .execute();
+        return getJsonObjectData(execute);
+
+    }
+
+    /**
+     *  获取图文素材中图片的url
+     */
     public JSONObject getArticleImageUrl(File file){
         if (!file.exists())return null;
-        FormDataMultiPart formDataMultiPart = new FormDataMultiPart();
-        formDataMultiPart.bodyPart(new FileDataBodyPart("media",file));
-        /*Client client = Client.create();
-        client.setConnectTimeout(10000);
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost httpPost = new HttpPost(weixinHost + "cgi-bin/media/uploadimg?access_token=" + token);
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(20000).setSocketTimeout(20000).build();
+        httpPost.setConfig(requestConfig);
 
-        ClientResponse clientResponse = client.resource(weixinHost + "cgi-bin/media/uploadimg?access_token=" + token)
-                                            .type(MediaType.APPLICATION_FORM_URLENCODED)
-                                            .post(ClientResponse.class, formDataMultiPart);*/
+        FileBody fileBody = new FileBody(file);
+        HttpEntity media = MultipartEntityBuilder.create().addPart("media", fileBody).build();
+        httpPost.setEntity(media);
 
-        javax.ws.rs.client.Client client = ClientBuilder.newClient();
-        Response response = client.target(weixinHost + "cgi-bin/media/uploadimg?access_token=" + token)
-                .request()
-                .post(Entity.entity(formDataMultiPart, formDataMultiPart.getMediaType()));
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("entity",response);
-
-        return jsonObject;
+        CloseableHttpResponse httpResponse = null;
+        try {
+            httpResponse = httpClient.execute(httpPost);
+            if (httpResponse != null && httpResponse.getEntity() != null){
+                HttpEntity entity = httpResponse.getEntity();
+                String s = EntityUtils.toString(entity);
+                return JSON.parseObject(s);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    public static void main(String[] args){
-        File file = new File("/Users/linsen/windWork/wechat_picture/dockerfile_03.png");
-        System.out.println(file.exists());
-    }
+
 }
