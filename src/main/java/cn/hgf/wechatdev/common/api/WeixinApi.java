@@ -53,25 +53,6 @@ public class WeixinApi extends BaseApi{
     }
 
     public JSONObject getMediaList(String type,Integer offest,Integer count){
-        /*CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-
-        HttpPost httpPost =  new HttpPost(weixinHost + "cgi-bin/material/batchget_material?access_token=" + token);
-        httpPost.setConfig(getRequestConfig());
-
-        JSONObject requestParam = new JSONObject();
-        requestParam.put("type", type);
-        requestParam.put("offest",offest != null ? offest : 0);
-        requestParam.put("count",count != null ? count : 20);
-
-        CloseableHttpResponse httpResponse = null;
-        try {
-            httpPost.setEntity(new StringEntity(requestParam.toJSONString()));
-            httpResponse = httpClient.execute(httpPost);
-
-            return getJsonObjectData(httpResponse);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
 
         HttpResponse execute = new SwapperHttpClient(weixinHost + "cgi-bin/material/batchget_material?access_token=" + token)
                                     .addRequestParam("type", type)

@@ -37,6 +37,12 @@ public class SwapperHttpClient {
         httpRequestBase = new HttpPost(this.url);
         return this;
     }
+    public SwapperHttpClient post(HttpEntity httpEntity){
+        if (httpRequestBase instanceof HttpEntityEnclosingRequestBase){
+            ((HttpEntityEnclosingRequestBase) httpRequestBase).setEntity(httpEntity);
+        }
+        return this;
+    }
 
     public SwapperHttpClient addHeader(String key,String value){
         httpRequestBase.addHeader(key, value);
@@ -50,24 +56,11 @@ public class SwapperHttpClient {
         return this;
     }
 
-    public HttpResponse execute(HttpEntity httpEntity){
-        if (httpClient instanceof HttpEntityEnclosingRequestBase){
-            ((HttpEntityEnclosingRequestBase) httpClient).setEntity(httpEntity);
-        }
-
-        try {
-            return httpClient.execute(httpRequestBase);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public HttpResponse execute(){
         try {
-            if (((HttpEntityEnclosingRequestBase) httpClient) != null && requestParam != null){
+            if (httpRequestBase instanceof HttpEntityEnclosingRequestBase && requestParam != null){
                 StringEntity stringEntity = new StringEntity(requestParam.toString());
-                ((HttpEntityEnclosingRequestBase) httpClient).setEntity(stringEntity);
+                ((HttpEntityEnclosingRequestBase) httpRequestBase).setEntity(stringEntity);
 
             }
             return httpClient.execute(httpRequestBase);
@@ -75,5 +68,8 @@ public class SwapperHttpClient {
             e.printStackTrace();
         }
         return null;
+    }
+    public static void main(String[] args){
+        System.out.println(new HttpPost() instanceof HttpRequestBase);
     }
 }
